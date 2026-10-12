@@ -2,7 +2,7 @@ import os
 from dotenv import load_dotenv
 import requests
 import feedparser
-from database import initdb    ######, is_article_new, save_article
+from database import initdb, is_article_new, save_article
 
 
 initdb()
@@ -18,11 +18,18 @@ def send_message(to_send):
         'chat_id' : chat_id, 
         'text' : to_send
     }
-    try : 
-        requests.post(url= url, data= data, timeout=10)
 
-    except Exception as e:
-        print (f"erreur : {e}")
+    title = to_send.split("\n")[0].replace("📢 ", "")
+    link = to_send.split("\n")[-1]
+
+    if is_article_new(link):
+        save_article(link, title)
+        try : 
+            requests.post(url= url, data= data, timeout=10)
+        except Exception as e:
+            print (f"erreur : {e}")
+    else :
+        print("article deja envoyé")
 
 
 
@@ -40,6 +47,7 @@ def check_react_news():
     send_message(message)
 
 
-  
 
-check_react_news()
+
+if __name__ == "__main__":
+    check_react_news()
