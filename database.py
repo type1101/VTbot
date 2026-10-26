@@ -7,7 +7,8 @@ def initdb():
         CREATE TABLE IF NOT EXISTS articles (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             link TEXT UNIQUE,
-            title TEXT
+            title TEXT,
+            category TEXT
         )
     """)
     connexion.commit()
@@ -21,9 +22,9 @@ def is_article_new(link):
     connexion.close()
     return result is None
 
-def save_article(link, title):
+def save_article(link, title, category):
     connexion = sqlite3.connect("veille.db")
     cursor = connexion.cursor()
-    cursor.execute("INSERT INTO articles (link, title) VALUES (?, ?)", (link, title))
+    cursor.execute("INSERT INTO articles (link, title, category) VALUES (?, ?, ?)", (link, title, category))
     connexion.commit()
     connexion.close()
